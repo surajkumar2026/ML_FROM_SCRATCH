@@ -1,6 +1,7 @@
 import numpy as np
 
-#from ml_algo_script.utils.utils import mse
+from ml_algo_script.utils.data_manipulation import polynomial_feature
+from ml_algo_script.utils.matrix import mse
 
 class Regression:
     def __init__(self, no_itration,no_features,learning_rate):
@@ -26,8 +27,8 @@ class Regression:
         for i in range(self.no_itration):
             Y_pred= X.dot(self.w)
             ## use MSE as the cost function 
-            #error= mse(Y,Y_pred)
-            error= np.mean((Y - Y_pred) ** 2)
+            error= mse(Y,Y_pred)
+            # error= np.mean((Y - Y_pred) ** 2)
             self.error.append(error)
             grad_w= -(Y-Y_pred).dot(X)
             #update the weights
@@ -49,25 +50,53 @@ class Linear_regression(Regression):
 
     def predict(self,X):
          return super(Linear_regression,self).prediction(X)
+    
 
 
 
+class polynomial_regression(Regression):
+    def __init__(self,degree, no_itration, no_features, learning_rate):
+        self.degree= degree
+        super(polynomial_regression,self).__init__(no_itration, no_features, learning_rate)
 
-class Excutation():
 
-    def __init__(self,no_itration,no_feature,learning_rate,x,Y,test_x):
+    def fit_model(self, X, Y):
+        X= polynomial_feature(X,degree=self.degree)
+        return super(polynomial_regression,self).fit(X, Y)
+
+
+    def pridict(self,X):
+        X=polynomial_feature(X,degree=self.degree)
+        return super(polynomial_regression,self).prediction(X)
+
+
+
+class module_regression():
+
+    def __init__(self,no_itration,no_feature,learning_rate):
         self.no_itration=no_itration
         self.no_feature=no_feature
         self.learning_rate=learning_rate
-        # self.X=x
-        # self.Y=Y
-        # self.test_X=test_x
+        
        
     
-    def modeul(self,X,Y,test_X):
+    def linear_modeul(self,X,Y,test_X):
         Linearregression = Linear_regression(self.no_itration,self.no_feature,self.learning_rate)
-        fit_data=Linearregression.fit(X,Y)
+        fit_data=Linearregression.fit_model(X,Y)
         print(Linearregression.predict(test_X))
+
+
+    def poly_regression_model( self,degree, X,Y,test_X):
+        polynomialregression= polynomial_regression(degree,self.no_itration,self.no_feature,self.learning_rate)
+        fit_data= polynomialregression.fit_model(X,Y)
+        print(f"polynomialregression prediction is {polynomialregression.pridict(test_X)}")
+        pass
+
+
+
+
+
+ 
 
 
     
