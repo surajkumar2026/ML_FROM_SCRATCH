@@ -23,4 +23,10 @@ def polynomial_feature(X,degree):
         X_new[:,i]= np.prod(X[:,index_com],axis=1)
 
 
-    return X_new
+    return X_new 
+
+
+
+def sigmoid(X):
+    return 1/np.exp(-X)
+    pass
