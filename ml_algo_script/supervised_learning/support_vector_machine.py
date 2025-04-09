@@ -3,12 +3,12 @@ import numpy as np
 import cvxopt
 
 
-from ml_algo_script.utils import kernels
+from ml_algo_script.utils.kernels import linear_kernel, polynomial_kernel, rbf_kernel
 
 
 
 class SupportVectorMachine:
-    def __init__(self,c=1, kernal,power, gamma,coef ):
+    def __init__(self, kernal, power, gamma, coef, c=1):
         self.c=c
         self.kernal=kernal
         self.power=power
@@ -23,12 +23,24 @@ class SupportVectorMachine:
 
         no_samples, no_feature= x_train.shape
 
+        
+
+
 
         ##hme kernel_matrix baana hoga 
         kernel_maytrix= np.empty((no_samples,no_samples))
         for i in range(no_samples):
             for j in range(no_samples):
                 kernel_maytrix[i,j]= self.kernal(x_train[i],x_train[j])
+
+        if self.kernal==linear_kernel:
+            kernel_maytrix= np.dot(x_train,x_train.T)
+        elif self.kernal==polynomial_kernel:
+            kernel_maytrix= (np.dot(x_train,x_train.T)+self.coef)**self.power
+        elif self.kernal==rbf_kernel:
+            kernel_maytrix= np.exp(-self.gamma*np.linalg.norm(x_train[:,np.newaxis]-x_train,axis=2)**2)
+        else:
+            raise ValueError("Invalid kernel function.")
 
 
         ## ab hme lagrange multiplier nikalna hoga
