@@ -5,6 +5,12 @@ from ml_algo_script.supervised_learning.regression import module_regression
 
 from ml_algo_script.model_test.Logistic_Regression import main
 
+from ml_algo_script.model_test.SVM import svm
+
+
+
+
+
 if __name__=="__main__":
     # X=[[1,2,3],[4,5,6]]
     # x_array=np.array(X)
@@ -15,6 +21,8 @@ if __name__=="__main__":
     # regression.linear_modeul(x_array,Y,test_X)
     # regression.poly_regression_model(degree=2, X=x_array, Y=Y,  test_X=test_X)
     logistic_test=main()
+    SVM = svm()
+    
 
 
 

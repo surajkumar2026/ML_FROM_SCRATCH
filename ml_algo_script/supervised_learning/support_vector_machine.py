@@ -27,29 +27,25 @@ class SupportVectorMachine:
 
 
 
-        ##hme kernel_matrix baana hoga 
-        kernel_maytrix= np.empty((no_samples,no_samples))
+          # Initialize kernel method with parameters
+        self.kernal = self.kernal(
+            power=self.power,
+            gamma=self.gamma,
+            coef=self.coef)
+
+        # Calculate kernel matrix
+        kernal_matrix = np.zeros((no_samples, no_samples))
         for i in range(no_samples):
             for j in range(no_samples):
-                kernel_maytrix[i,j]= self.kernal(x_train[i],x_train[j])
-
-        if self.kernal==linear_kernel:
-            kernel_maytrix= np.dot(x_train,x_train.T)
-        elif self.kernal==polynomial_kernel:
-            kernel_maytrix= (np.dot(x_train,x_train.T)+self.coef)**self.power
-        elif self.kernal==rbf_kernel:
-            kernel_maytrix= np.exp(-self.gamma*np.linalg.norm(x_train[:,np.newaxis]-x_train,axis=2)**2)
-        else:
-            raise ValueError("Invalid kernel function.")
-
+                kernal_matrix[i, j] = self.kernal(x_train[i], x_train[j])
 
         ## ab hme lagrange multiplier nikalna hoga
         ## lagrange multiplier nikalne ke liye hme quadratic programming karna hoga
         ## quadratic programming ke liye hme cvxopt library ka use karna hoga
         ## cvxopt library ka use karne ke liye hme lagrange multiplier ki matrix banana hoga
         ## lagrange multiplier ki matrix banane ke liye hme cvxopt library ka use karna hoga
-        p = cvxopt.matrix(np.outer(y_train, y_train)*kernel_maytrix,tc='d')
-        q=cvxopt.matrix(np.one(no_samples)*-1)
+        p = cvxopt.matrix(np.outer(y_train, y_train)*kernal_matrix,tc='d')
+        q=cvxopt.matrix(np.ones(no_samples)*-1)
         A= cvxopt.matrix(y_train,(1,no_samples),tc='d')
         b=cvxopt.matrix(0, tc='d')
 
@@ -57,11 +53,11 @@ class SupportVectorMachine:
         G_min = np.identity(no_samples)
         G = cvxopt.matrix(np.vstack((G_max, G_min)))
         h_max = cvxopt.matrix(np.zeros(no_samples))
-        h_min = cvxopt.matrix(np.ones(no_samples) * self.C)
+        h_min = cvxopt.matrix(np.ones(no_samples) * self.c)
         h = cvxopt.matrix(np.vstack((h_max, h_min)))
 
         # solving the quadratic programming problem
-        minimization = cvxopt.solver.qp(p,q,G,h,A,b)
+        minimization = cvxopt.solvers.qp(p,q,G,h,A,b)
 
         #lagrange multiplier in one dimension
         lagr_mult= np.ravel(minimization['x'])
@@ -89,5 +85,5 @@ class SupportVectorMachine:
             for i in range (len (self.lagrange_multiplier)):
                 pred += self.lagrange_multiplier[i] * self.support_vector_label[i] * self.kernal(sample,self.support_vector[i])
                 pred += self.intercept
-                y_pred.append(np.sign(pred))
+            y_pred.append(np.sign(pred))
         return np.array(y_pred)
